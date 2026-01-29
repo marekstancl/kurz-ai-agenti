@@ -2,7 +2,7 @@
 
 **Purpose:** Krátký, chronologický log všech AI sessions. Nejnovější záznamy jsou NAHOŘE.
 
-**Last Updated:** 2026-01-29 18:20 CET
+**Last Updated:** 2026-01-29 18:35 CET
 
 ---
 
@@ -36,12 +36,27 @@
 - [Hlavní úkol 2]
 ```
 
+### 2026-01-29 18:35 CET - python-venv-setup
+
+**Type:** new-feature  
+**Status:** completed  
+**Duration:** ~15m  
+**Commits:** [pending]
+
+**Summary:**
+- Python 3.13.9 virtual environment vytvořen a testován
+- requirements.txt skeleton pro kurz dependencies
+- README aktualizován s aktivačními instrukcemi
+- Vše připraveno pro instalaci AI/ML knihoven
+
+---
+
 ### 2026-01-29 18:20 CET - project-setup
 
 **Type:** exploration  
 **Status:** completed  
 **Duration:** ~30m  
-**Commits:** f047491, 6ddda98, [pending]
+**Commits:** f047491, 6ddda98, 0d26cde, f559aa3
 
 **Summary:**
 - Kompletní setup Git & GitHub repozitáře
@@ -53,8 +68,8 @@
 
 ## 📈 Statistics
 
-**Total Sessions:** 1  
-**Completed:** 1  
+**Total Sessions:** 2  
+**Completed:** 2  
 **Active:** 0  
 **Blocked:** 0
 

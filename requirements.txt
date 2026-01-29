@@ -1,0 +1,35 @@
+# Kurz AI Agenti - Dependencies
+
+# Core AI/LLM Libraries
+# openai>=1.0.0
+# anthropic>=0.8.0
+# langchain>=0.1.0
+# langchain-openai>=0.0.2
+
+# Agent Frameworks
+# autogen>=0.2.0
+# semantic-kernel>=0.4.0
+# langgraph>=0.0.20
+
+# Database & Vector Stores
+# chromadb>=0.4.0
+# sqlalchemy>=2.0.0
+# pymongo>=4.0.0
+
+# Reinforcement Learning
+# gymnasium>=0.29.0
+# pettingzoo>=1.24.0
+# stable-baselines3>=2.2.0
+
+# Utilities
+# python-dotenv>=1.0.0
+# requests>=2.31.0
+# pydantic>=2.5.0
+
+# Development
+# pytest>=7.4.0
+# black>=23.0.0
+# flake8>=6.1.0
+
+# Note: Uncomment dependencies as needed during course
+# This file will be updated with specific versions as we progress
