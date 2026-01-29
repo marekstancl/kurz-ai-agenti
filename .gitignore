@@ -2,6 +2,9 @@
 .github/
 .quick-reference/
 
+# Reference Materials (cloned from external repos)
+examples/
+
 # Python
 __pycache__/
 *.py[cod]

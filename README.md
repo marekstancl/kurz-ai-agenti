@@ -53,6 +53,30 @@ deactivate
 ## 📖 Reference
 
 - [Global Classes CZE](https://github.com/Global-Classes-CZE)
+- [AI Chatbots Examples](examples/ai-chatbots/) - Reference implementace z kurzu
+
+## 📂 Project Structure
+
+```
+kurz-ai-agenti/
+├── examples/           # Reference materiály (není verzováno)
+│   └── ai-chatbots/    # Naklonováno z Global-Classes-CZE
+│       ├── lekce1-10/  # Příklady kódu z lekcí
+│       └── README*.md  # Dokumentace různých agentů
+├── lectures/           # Vaše implementace z lekcí
+│   ├── lecture01/
+│   ├── lecture02/
+│   └── ...
+├── projects/           # Vaše vlastní projekty
+│   └── final-project/
+├── workspace/          # AI Agent Framework tracking
+│   ├── sessions/       # Session tracking
+│   ├── bugs.md
+│   └── session-log.md
+├── venv/               # Python virtual environment
+├── requirements.txt    # Python dependencies
+└── README.md
+```
 
 ## 📝 Development
 

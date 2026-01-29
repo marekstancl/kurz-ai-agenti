@@ -2,7 +2,7 @@
 
 **Purpose:** Krátký, chronologický log všech AI sessions. Nejnovější záznamy jsou NAHOŘE.
 
-**Last Updated:** 2026-01-29 18:35 CET
+**Last Updated:** 2026-01-29 18:50 CET
 
 ---
 
@@ -36,6 +36,21 @@
 - [Hlavní úkol 2]
 ```
 
+### 2026-01-29 18:50 CET - reference-setup
+
+**Type:** new-feature  
+**Status:** completed  
+**Duration:** ~20m  
+**Commits:** [pending]
+
+**Summary:**
+- Vytvořena struktura: examples/, lectures/, projects/
+- Naklonováno ai-chatbots reference repo z Global-Classes-CZE
+- examples/ přidáno do .gitignore (neverzujeme cizí kód)
+- README aktualizován s kompletní strukturou projektu
+
+---
+
 ### 2026-01-29 18:35 CET - python-venv-setup
 
 **Type:** new-feature  
@@ -53,8 +68,8 @@
 
 ### 2026-01-29 18:20 CET - project-setup
 
-**Type:** exploration  
-**Status:** completed  
+**Type:** exploratio3  
+**Completed:** 3leted  
 **Duration:** ~30m  
 **Commits:** f047491, 6ddda98, 0d26cde, f559aa3
 
