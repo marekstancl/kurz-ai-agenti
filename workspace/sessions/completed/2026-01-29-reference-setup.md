@@ -73,4 +73,4 @@ git pull origin main
 ```
 
 ## Commits
-[pending]: feat: add project structure and reference materials
+d90d611: feat: add project structure and reference materials
