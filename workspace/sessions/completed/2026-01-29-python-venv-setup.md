@@ -77,4 +77,4 @@ deactivate
 ```
 
 ## Commits
-[pending]: feat: add Python virtual environment setup
+7f98fd7: feat: add Python virtual environment setup
