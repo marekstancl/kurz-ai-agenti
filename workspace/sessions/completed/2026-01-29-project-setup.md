@@ -61,7 +61,7 @@ Framework soubory v `.github/` jsou development tooling pro AI asistenty. Neměl
 ## Commits
 - f047491: chore: add .gitignore and session tracking
 - 6ddda98: docs: complete git-github-setup session
-- [pending]: chore: exclude framework files from git
+- 0d26cde: chore: exclude framework files from versioning
 
 ## References
 - Framework: AI Agent Framework v3.0.0
