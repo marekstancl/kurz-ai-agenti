@@ -41,7 +41,7 @@
 **Type:** new-feature  
 **Status:** completed  
 **Duration:** ~20m  
-**Commits:** [pending]
+**Commits:** d90d611
 
 **Summary:**
 - Vytvořena struktura: examples/, lectures/, projects/
