@@ -2,7 +2,7 @@
 
 **Purpose:** Krátký, chronologický log všech AI sessions. Nejnovější záznamy jsou NAHOŘE.
 
-**Last Updated:** 2026-01-29 17:40 CET
+**Last Updated:** 2026-01-29 18:00 CET
 
 ---
 
@@ -36,12 +36,24 @@
 - [Hlavní úkol 2]
 ```
 
+### 2026-01-29 18:00 CET - git-github-setup
+
+**Type:** exploration  
+**Status:** completed  
+**Duration:** ~20m  
+**Commits:** f047491
+
+**Summary:**
+- Nastavení Git repozitáře a napojení na GitHub
+- Vytvoření .gitignore pro Python/AI projekt
+- Push do public repo: https://github.com/marekstancl/kurz-ai-agenti
+
 ---
 
 ## 📈 Statistics
 
-**Total Sessions:** 0  
-**Completed:** 0  
+**Total Sessions:** 1  
+**Completed:** 1  
 **Active:** 0  
 **Blocked:** 0
 
