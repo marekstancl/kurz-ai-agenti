@@ -1,3 +1,7 @@
+# Framework & Instructions
+.github/
+.quick-reference/
+
 # Python
 __pycache__/
 *.py[cod]
