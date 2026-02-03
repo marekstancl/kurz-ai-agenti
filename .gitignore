@@ -5,6 +5,10 @@
 # Reference Materials (cloned from external repos)
 examples/
 
+# Workspace - pouze assignments/ je tracked
+workspace/*
+!workspace/assignments/
+
 # Python
 __pycache__/
 *.py[cod]
