@@ -104,11 +104,12 @@ Přečti si [new-chat.md](../quick-reference/new-chat.md) a inicializuj session.
 **Standard Work Pattern:**
 ```markdown
 Loop:
-  1. Implement change
-  2. PM tests/approves
-  3. Commit (see git-commit-protocol.md)
-  4. Update session file
-  5. Next task or finish
+   1. Implement change
+   2. PM tests/approves
+   3. Update documentation per documentation-protocol.md (if affected)
+   4. Commit (see git-commit-protocol.md)
+   5. Update session file
+   6. Next task or finish
 ```
 
 **Quality Gates:**
@@ -126,13 +127,14 @@ Přečti si [task-complete.md](../quick-reference/task-complete.md) a ukonči se
 ```markdown
 1. Čti task-complete.md (MANDATORY)
 2. Run final quality gates
-3. Update session file:
+3. Update documentation per documentation-protocol.md (if affected)
+4. Update session file:
    - Status: ✅ Completed
    - All commits listed
    - All files changed
-4. Generate completion summary
-5. Ask PM: Close or continue?
-6. Update `workspace/session-log.md` (přidej záznam nahoru + statistiky)
+5. Generate completion summary
+6. Ask PM: Close or continue?
+7. Update `workspace/session-log.md` (přidej záznam nahoru + statistiky)
 ```
 
 **Completion Checklist:**

@@ -5,49 +5,25 @@ applyTo: "**/*"
 # 📘 Project Guide
 
 **Version:** 3.0.0  
-**Last Updated:** 2026-01-29
+**Last Updated:** 2026-01-24
 
-> **Course Setup:** This file is customized for the AI Agenti course and should be updated as the repo grows.
+> **Auto-Generated:** This file is auto-generated when AI starts new session.
 
 ---
 
 ## 🎯 Overview
 
-**Project Guide = quick reference for the AI Agenti course project**
-
-**Purpose:** Keep course-specific context and evolving setup in one place.
+**Project Guide = project-specific quick reference**
 
 **Contains:**
-- Course context and goals
-- Current tech stack (as it becomes known)
+- Architecture overview
 - Quick start commands
 - Testing commands
 - Log locations
 - Database operations
 - Common troubleshooting
 
-**Current State:** Empty repo + AI Agent Framework installed. Code will be added during the course.
-
-## 🧭 Course Context
-
-**Course:** AI Agenti (29. 1. 2026 → 5. 3. 2026)
-
-**Goal:** Build a working AI agent that connects LLMs, databases, and tools.
-
-**Expected topics/tools (per course outline):**
-- LLM APIs: OpenAI, Anthropic, HuggingFace, Ollama
-- Frameworks: LangChain, Semantic Kernel, Autogen, LangGraph, n8n
-- Data stores: SQL, NoSQL, vector DB (e.g., ChromaDB)
-- Reinforcement learning: Gymnasium, PettingZoo, Stable-Baselines3
-- Infrastructure: Docker, GitHub
-
-**Notes:** Update this section after each lesson with new decisions or constraints.
-
-## ✅ Current Decisions
-
-- **Tech Stack:** TBD (decide during lessons)
-- **Project Type:** Course exercises + final agent project
-- **Repo Scope:** All work for the course stays in this repo
+**Generate:** AI auto-generates when starting new session (reads codebase)
 
 ---
 
@@ -138,13 +114,18 @@ DATABASE_URL = "postgresql://..."
 
 **Migrations:**
 ```bash
-# Create
-alembic revision --autogenerate -m "message"
+# Check project-specific approach:
+# - Alembic: alembic revision --autogenerate -m "message"
+# - Raw SQL: Create numbered .sql files in migrations/
+# - Flyway: Use V{version}__{description}.sql format
+
+# Example (Alembic):
+alembic revision --autogenerate -m "add users table"
 
 # Apply
 alembic upgrade head
 
-# Rollback
+# Rollback (if supported)
 alembic downgrade -1
 ```
 

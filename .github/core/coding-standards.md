@@ -207,19 +207,22 @@ domains = db.query(LegalDomain).filter(LegalDomain.name.like('%contract%')).all(
 query = f"SELECT * FROM legal_domains WHERE name = '{name}'"
 ```
 
-### Migrations (Alembic)
+### Database Migrations
 ```sql
 -- Descriptive filename, proper constraints
-CREATE TABLE legal_domains (
+-- Example: 001_create_users_table.sql
+
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    code VARCHAR(10) NOT NULL UNIQUE,
-    description TEXT,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-CREATE INDEX idx_legal_domains_name ON legal_domains(name);
+CREATE INDEX idx_users_email ON users(email);
 ```
+
+**Note:** Migration tool depends on project (Alembic, raw SQL, Flyway, etc.). Check [project-guide.md](project-guide.md) for your project's approach.
 
 **Examples:** [examples/coding-examples.md](../examples/coding-examples.md#sql)
 
