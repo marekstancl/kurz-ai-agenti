@@ -1,0 +1,31 @@
+# AID Engine (internal state — not for version control)
+.aid-o/04-engine/runs/
+.aid-o/04-engine/evidence/
+.aid-o/04-engine/memory/
+.aid-o/logs/
+
+# AID Orchestrator — runtime artifacts
+.aid-o/04-engine/
+
+# Environment
+.env
+.env.local
+
+# Node
+node_modules/
+dist/
+build/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+.streamlit/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
