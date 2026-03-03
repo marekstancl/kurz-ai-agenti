@@ -1,0 +1,681 @@
+{
+    "updatedAt": "2026-03-01T16:27:56.619Z",
+    "createdAt": "2026-03-01T16:27:56.619Z",
+    "id": "JxXfdhiJkohkqkYH",
+    "name": "Crypto Intelligence Chat Agent",
+    "description": null,
+    "active": true,
+    "isArchived": false,
+    "nodes": [
+        {
+            "id": "ca-chat",
+            "name": "Chat",
+            "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+            "typeVersion": 1.4,
+            "position": [
+                0,
+                300
+            ],
+            "webhookId": "crypto-agent-chat",
+            "parameters": {
+                "public": true,
+                "options": {
+                    "title": "Crypto & Macro Intelligence Agent",
+                    "subtitle": "AI anal\u00fdza Bitcoin trhu a makroekonomick\u00fdch ud\u00e1lost\u00ed",
+                    "inputPlaceholder": "Zeptej se na BTC, makro trendy, historick\u00e9 anal\u00fdzy...",
+                    "loadPreviousSession": "memory"
+                }
+            }
+        },
+        {
+            "id": "ca-btc-http",
+            "name": "CoinGecko BTC",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                200,
+                300
+            ],
+            "parameters": {
+                "method": "GET",
+                "url": "https://api.coingecko.com/api/v3/simple/price",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "ids",
+                            "value": "bitcoin"
+                        },
+                        {
+                            "name": "vs_currencies",
+                            "value": "usd,eur,czk"
+                        },
+                        {
+                            "name": "include_market_cap",
+                            "value": "true"
+                        },
+                        {
+                            "name": "include_24hr_vol",
+                            "value": "true"
+                        },
+                        {
+                            "name": "include_24hr_change",
+                            "value": "true"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "neverError": true
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "id": "ca-merge",
+            "name": "Prepare Context",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                400,
+                300
+            ],
+            "parameters": {
+                "jsCode": "const chatData = $('Chat').first().json;\nconst btcData = $input.first().json;\n\nlet btcContext = 'Data nedostupn\u00e1';\ntry {\n  if (btcData && btcData.bitcoin) {\n    const b = btcData.bitcoin;\n    btcContext = `USD: $${b.usd?.toLocaleString()}, EUR: \u20ac${b.eur?.toLocaleString()}, CZK: ${b.czk?.toLocaleString()} K\u010d, Market Cap: $${(b.usd_market_cap/1e9)?.toFixed(1)}B, 24h objem: $${(b.usd_24h_vol/1e9)?.toFixed(1)}B, 24h zm\u011bna: ${b.usd_24h_change?.toFixed(2)}%`;\n  }\n} catch(e) {\n  btcContext = 'Chyba: ' + e.message;\n}\n\nreturn [{\n  json: {\n    chatInput: chatData.chatInput,\n    sessionId: chatData.sessionId,\n    btcContext: btcContext\n  }\n}];"
+            }
+        },
+        {
+            "id": "ca-agent",
+            "name": "Market Agent",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3.1,
+            "position": [
+                600,
+                300
+            ],
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.chatInput }}\n\n--- AKTU\u00c1LN\u00cd BTC DATA (CoinGecko, live) ---\n{{ $json.btcContext }}",
+                "options": {
+                    "systemMessage": "Jsi Crypto & Macro Intelligence Agent \u2014 expertn\u00ed analytik Bitcoin trhu a makroekonomick\u00fdch podm\u00ednek.\n\nTvoje schopnosti:\n- M\u00e1\u0161 p\u0159\u00edstup k historick\u00fdm anal\u00fdz\u00e1m v datab\u00e1zi (crypto + makro data sb\u00edran\u00e1 pravideln\u011b)\n- V ka\u017ed\u00e9 zpr\u00e1v\u011b dost\u00e1v\u00e1\u0161 aktu\u00e1ln\u00ed BTC cenu z CoinGecko (viz kontext pod dotazem)\n- M\u016f\u017ee\u0161 po\u010d\u00edtat procentu\u00e1ln\u00ed zm\u011bny pomoc\u00ed kalkula\u010dky\n\nPravidla:\n1. V\u017edy odpov\u00eddej \u010cESKY\n2. U ka\u017ed\u00e9 informace uve\u010f datum/zdroj dat\n3. Koreluj crypto data s makro ud\u00e1lostmi\n4. Uve\u010f sentiment (bullish/bearish/neutral) s od\u016fvodn\u011bn\u00edm\n5. P\u0159i dotazu na historii V\u017dDY hledej v datab\u00e1zi historick\u00fdch anal\u00fdz\n6. Aktu\u00e1ln\u00ed BTC data m\u00e1\u0161 v kontextu zpr\u00e1vy - nemus\u00ed\u0161 volat \u017e\u00e1dn\u00fd tool\n7. Pokud nem\u00e1\u0161 historick\u00e1 data, \u0159ekni to a nab\u00eddni anal\u00fdzu aktu\u00e1ln\u00edch dat\n8. Bu\u010f stru\u010dn\u00fd ale informativn\u00ed\n\nForm\u00e1t odpov\u011bdi:\n\ud83d\udcca Aktu\u00e1ln\u00ed stav: [cena a tr\u017en\u00ed data]\n\ud83d\udcc8 Anal\u00fdza: [hlavn\u00ed body]\n\ud83d\udd2e V\u00fdhled: [kr\u00e1tk\u00fd outlook]",
+                    "maxIterations": 10,
+                    "returnIntermediateSteps": false
+                }
+            }
+        },
+        {
+            "id": "ca-llm",
+            "name": "GPT-4o",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1.3,
+            "position": [
+                400,
+                550
+            ],
+            "parameters": {
+                "model": {
+                    "__rl": true,
+                    "value": "gpt-4o",
+                    "mode": "list"
+                },
+                "options": {
+                    "temperature": 0.3
+                }
+            },
+            "credentials": {
+                "openAiApi": {
+                    "id": "vAU7wTTbFwSO4Kxc",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "id": "ca-memory",
+            "name": "Chat Memory",
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.3,
+            "position": [
+                600,
+                550
+            ],
+            "parameters": {
+                "contextWindowLength": 10
+            }
+        },
+        {
+            "id": "ca-qdrant",
+            "name": "Historical Analyses",
+            "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+            "typeVersion": 1,
+            "position": [
+                800,
+                550
+            ],
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolName": "historical_market_analyses",
+                "toolDescription": "Prohledej historick\u00e9 anal\u00fdzy Bitcoin trhu a makroekonomick\u00fdch ud\u00e1lost\u00ed. Pou\u017e\u00edvej kdy\u017e se u\u017eivatel pt\u00e1 na historii, trendy, minul\u00e9 ud\u00e1losti, porovn\u00e1n\u00ed mezi obdob\u00edmi, nebo makro dopady na Bitcoin.",
+                "qdrantCollection": {
+                    "__rl": true,
+                    "value": "market-intelligence",
+                    "mode": "list"
+                },
+                "topK": 5
+            },
+            "credentials": {
+                "qdrantApi": {
+                    "id": "X8D7d2VOshvPlFx7",
+                    "name": "Qdrant - Market Intelligence"
+                }
+            }
+        },
+        {
+            "id": "ca-embeddings",
+            "name": "Embeddings OpenAI",
+            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+            "typeVersion": 1,
+            "position": [
+                800,
+                750
+            ],
+            "parameters": {
+                "model": "text-embedding-3-small"
+            },
+            "credentials": {
+                "openAiApi": {
+                    "id": "vAU7wTTbFwSO4Kxc",
+                    "name": "OpenAI API"
+                }
+            }
+        },
+        {
+            "id": "ca-calculator",
+            "name": "Calculator",
+            "type": "@n8n/n8n-nodes-langchain.toolCode",
+            "typeVersion": 1,
+            "position": [
+                1000,
+                550
+            ],
+            "parameters": {
+                "name": "calculator",
+                "description": "Kalkula\u010dka pro v\u00fdpo\u010dty procentu\u00e1ln\u00edch zm\u011bn, cenov\u00fdch rozd\u00edl\u016f a porovn\u00e1n\u00ed. Vstup je JavaScript matematick\u00fd v\u00fdraz jako string. P\u0159\u00edklad: '(85000 - 80000) / 80000 * 100' vr\u00e1t\u00ed procentu\u00e1ln\u00ed zm\u011bnu.",
+                "code": "const expression = query;\ntry {\n  const result = new Function('return ' + expression)();\n  return JSON.stringify({ result: Number(result.toFixed(4)), expression });\n} catch (e) {\n  return JSON.stringify({ error: 'Neplatn\u00fd v\u00fdraz: ' + e.message });\n}"
+            }
+        }
+    ],
+    "connections": {
+        "Chat": {
+            "main": [
+                [
+                    {
+                        "node": "CoinGecko BTC",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "CoinGecko BTC": {
+            "main": [
+                [
+                    {
+                        "node": "Prepare Context",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Prepare Context": {
+            "main": [
+                [
+                    {
+                        "node": "Market Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "GPT-4o": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Market Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Chat Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Market Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Historical Analyses": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Market Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embeddings OpenAI": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Historical Analyses",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Calculator": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Market Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "settings": {
+        "executionOrder": "v1",
+        "callerPolicy": "workflowsFromSameOwner",
+        "availableInMCP": false
+    },
+    "staticData": null,
+    "meta": null,
+    "pinData": null,
+    "versionId": "91ef81bc-7a8e-43d0-89a6-51b52fb9edeb",
+    "activeVersionId": "91ef81bc-7a8e-43d0-89a6-51b52fb9edeb",
+    "versionCounter": 3,
+    "triggerCount": 1,
+    "shared": [
+        {
+            "updatedAt": "2026-03-01T16:27:56.619Z",
+            "createdAt": "2026-03-01T16:27:56.619Z",
+            "role": "workflow:owner",
+            "workflowId": "JxXfdhiJkohkqkYH",
+            "projectId": "UQU1a6Cj7AYOQ5A0",
+            "project": {
+                "updatedAt": "2026-02-11T09:54:17.725Z",
+                "createdAt": "2026-02-11T09:35:53.373Z",
+                "id": "UQU1a6Cj7AYOQ5A0",
+                "name": "Marek stancl.marek@gmail.com <stancl.marek@gmail.com>",
+                "type": "personal",
+                "icon": null,
+                "description": null,
+                "creatorId": "58a99e76-cb4e-4039-871c-8a6da3e7a80f",
+                "projectRelations": [
+                    {
+                        "updatedAt": "2026-02-11T09:35:53.373Z",
+                        "createdAt": "2026-02-11T09:35:53.373Z",
+                        "userId": "58a99e76-cb4e-4039-871c-8a6da3e7a80f",
+                        "projectId": "UQU1a6Cj7AYOQ5A0",
+                        "user": {
+                            "updatedAt": "2026-03-03T12:52:25.766Z",
+                            "createdAt": "2026-02-11T09:35:53.061Z",
+                            "id": "58a99e76-cb4e-4039-871c-8a6da3e7a80f",
+                            "email": "stancl.marek@gmail.com",
+                            "firstName": "Marek",
+                            "lastName": "stancl.marek@gmail.com",
+                            "personalizationAnswers": {
+                                "version": "v4",
+                                "personalization_survey_submitted_at": "2026-02-11T09:54:32.978Z",
+                                "personalization_survey_n8n_version": "2.7.2",
+                                "companySize": "<20",
+                                "companyType": "saas",
+                                "role": "business-owner",
+                                "reportedSource": "google"
+                            },
+                            "settings": {
+                                "userActivated": true,
+                                "easyAIWorkflowOnboarded": true,
+                                "firstSuccessfulWorkflowId": "py7tOYCJB7bYPkYr",
+                                "userActivatedAt": 1770829066137,
+                                "npsSurvey": {
+                                    "waitingForResponse": true,
+                                    "ignoredCount": 2,
+                                    "lastShownAt": 1772085296429
+                                }
+                            },
+                            "disabled": false,
+                            "mfaEnabled": false,
+                            "lastActiveAt": "2026-03-03",
+                            "isPending": false
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "tags": [],
+    "activeVersion": {
+        "updatedAt": "2026-03-01T16:27:56.624Z",
+        "createdAt": "2026-03-01T16:27:56.624Z",
+        "versionId": "91ef81bc-7a8e-43d0-89a6-51b52fb9edeb",
+        "workflowId": "JxXfdhiJkohkqkYH",
+        "nodes": [
+            {
+                "id": "ca-chat",
+                "name": "Chat",
+                "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+                "typeVersion": 1.4,
+                "position": [
+                    0,
+                    300
+                ],
+                "webhookId": "crypto-agent-chat",
+                "parameters": {
+                    "public": true,
+                    "options": {
+                        "title": "Crypto & Macro Intelligence Agent",
+                        "subtitle": "AI anal\u00fdza Bitcoin trhu a makroekonomick\u00fdch ud\u00e1lost\u00ed",
+                        "inputPlaceholder": "Zeptej se na BTC, makro trendy, historick\u00e9 anal\u00fdzy...",
+                        "loadPreviousSession": "memory"
+                    }
+                }
+            },
+            {
+                "id": "ca-btc-http",
+                "name": "CoinGecko BTC",
+                "type": "n8n-nodes-base.httpRequest",
+                "typeVersion": 4.2,
+                "position": [
+                    200,
+                    300
+                ],
+                "parameters": {
+                    "method": "GET",
+                    "url": "https://api.coingecko.com/api/v3/simple/price",
+                    "sendQuery": true,
+                    "queryParameters": {
+                        "parameters": [
+                            {
+                                "name": "ids",
+                                "value": "bitcoin"
+                            },
+                            {
+                                "name": "vs_currencies",
+                                "value": "usd,eur,czk"
+                            },
+                            {
+                                "name": "include_market_cap",
+                                "value": "true"
+                            },
+                            {
+                                "name": "include_24hr_vol",
+                                "value": "true"
+                            },
+                            {
+                                "name": "include_24hr_change",
+                                "value": "true"
+                            }
+                        ]
+                    },
+                    "options": {
+                        "response": {
+                            "response": {
+                                "neverError": true
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                "id": "ca-merge",
+                "name": "Prepare Context",
+                "type": "n8n-nodes-base.code",
+                "typeVersion": 2,
+                "position": [
+                    400,
+                    300
+                ],
+                "parameters": {
+                    "jsCode": "const chatData = $('Chat').first().json;\nconst btcData = $input.first().json;\n\nlet btcContext = 'Data nedostupn\u00e1';\ntry {\n  if (btcData && btcData.bitcoin) {\n    const b = btcData.bitcoin;\n    btcContext = `USD: $${b.usd?.toLocaleString()}, EUR: \u20ac${b.eur?.toLocaleString()}, CZK: ${b.czk?.toLocaleString()} K\u010d, Market Cap: $${(b.usd_market_cap/1e9)?.toFixed(1)}B, 24h objem: $${(b.usd_24h_vol/1e9)?.toFixed(1)}B, 24h zm\u011bna: ${b.usd_24h_change?.toFixed(2)}%`;\n  }\n} catch(e) {\n  btcContext = 'Chyba: ' + e.message;\n}\n\nreturn [{\n  json: {\n    chatInput: chatData.chatInput,\n    sessionId: chatData.sessionId,\n    btcContext: btcContext\n  }\n}];"
+                }
+            },
+            {
+                "id": "ca-agent",
+                "name": "Market Agent",
+                "type": "@n8n/n8n-nodes-langchain.agent",
+                "typeVersion": 3.1,
+                "position": [
+                    600,
+                    300
+                ],
+                "parameters": {
+                    "promptType": "define",
+                    "text": "={{ $json.chatInput }}\n\n--- AKTU\u00c1LN\u00cd BTC DATA (CoinGecko, live) ---\n{{ $json.btcContext }}",
+                    "options": {
+                        "systemMessage": "Jsi Crypto & Macro Intelligence Agent \u2014 expertn\u00ed analytik Bitcoin trhu a makroekonomick\u00fdch podm\u00ednek.\n\nTvoje schopnosti:\n- M\u00e1\u0161 p\u0159\u00edstup k historick\u00fdm anal\u00fdz\u00e1m v datab\u00e1zi (crypto + makro data sb\u00edran\u00e1 pravideln\u011b)\n- V ka\u017ed\u00e9 zpr\u00e1v\u011b dost\u00e1v\u00e1\u0161 aktu\u00e1ln\u00ed BTC cenu z CoinGecko (viz kontext pod dotazem)\n- M\u016f\u017ee\u0161 po\u010d\u00edtat procentu\u00e1ln\u00ed zm\u011bny pomoc\u00ed kalkula\u010dky\n\nPravidla:\n1. V\u017edy odpov\u00eddej \u010cESKY\n2. U ka\u017ed\u00e9 informace uve\u010f datum/zdroj dat\n3. Koreluj crypto data s makro ud\u00e1lostmi\n4. Uve\u010f sentiment (bullish/bearish/neutral) s od\u016fvodn\u011bn\u00edm\n5. P\u0159i dotazu na historii V\u017dDY hledej v datab\u00e1zi historick\u00fdch anal\u00fdz\n6. Aktu\u00e1ln\u00ed BTC data m\u00e1\u0161 v kontextu zpr\u00e1vy - nemus\u00ed\u0161 volat \u017e\u00e1dn\u00fd tool\n7. Pokud nem\u00e1\u0161 historick\u00e1 data, \u0159ekni to a nab\u00eddni anal\u00fdzu aktu\u00e1ln\u00edch dat\n8. Bu\u010f stru\u010dn\u00fd ale informativn\u00ed\n\nForm\u00e1t odpov\u011bdi:\n\ud83d\udcca Aktu\u00e1ln\u00ed stav: [cena a tr\u017en\u00ed data]\n\ud83d\udcc8 Anal\u00fdza: [hlavn\u00ed body]\n\ud83d\udd2e V\u00fdhled: [kr\u00e1tk\u00fd outlook]",
+                        "maxIterations": 10,
+                        "returnIntermediateSteps": false
+                    }
+                }
+            },
+            {
+                "id": "ca-llm",
+                "name": "GPT-4o",
+                "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+                "typeVersion": 1.3,
+                "position": [
+                    400,
+                    550
+                ],
+                "parameters": {
+                    "model": {
+                        "__rl": true,
+                        "value": "gpt-4o",
+                        "mode": "list"
+                    },
+                    "options": {
+                        "temperature": 0.3
+                    }
+                },
+                "credentials": {
+                    "openAiApi": {
+                        "id": "vAU7wTTbFwSO4Kxc",
+                        "name": "OpenAI API"
+                    }
+                }
+            },
+            {
+                "id": "ca-memory",
+                "name": "Chat Memory",
+                "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+                "typeVersion": 1.3,
+                "position": [
+                    600,
+                    550
+                ],
+                "parameters": {
+                    "contextWindowLength": 10
+                }
+            },
+            {
+                "id": "ca-qdrant",
+                "name": "Historical Analyses",
+                "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+                "typeVersion": 1,
+                "position": [
+                    800,
+                    550
+                ],
+                "parameters": {
+                    "mode": "retrieve-as-tool",
+                    "toolName": "historical_market_analyses",
+                    "toolDescription": "Prohledej historick\u00e9 anal\u00fdzy Bitcoin trhu a makroekonomick\u00fdch ud\u00e1lost\u00ed. Pou\u017e\u00edvej kdy\u017e se u\u017eivatel pt\u00e1 na historii, trendy, minul\u00e9 ud\u00e1losti, porovn\u00e1n\u00ed mezi obdob\u00edmi, nebo makro dopady na Bitcoin.",
+                    "qdrantCollection": {
+                        "__rl": true,
+                        "value": "market-intelligence",
+                        "mode": "list"
+                    },
+                    "topK": 5
+                },
+                "credentials": {
+                    "qdrantApi": {
+                        "id": "X8D7d2VOshvPlFx7",
+                        "name": "Qdrant - Market Intelligence"
+                    }
+                }
+            },
+            {
+                "id": "ca-embeddings",
+                "name": "Embeddings OpenAI",
+                "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+                "typeVersion": 1,
+                "position": [
+                    800,
+                    750
+                ],
+                "parameters": {
+                    "model": "text-embedding-3-small"
+                },
+                "credentials": {
+                    "openAiApi": {
+                        "id": "vAU7wTTbFwSO4Kxc",
+                        "name": "OpenAI API"
+                    }
+                }
+            },
+            {
+                "id": "ca-calculator",
+                "name": "Calculator",
+                "type": "@n8n/n8n-nodes-langchain.toolCode",
+                "typeVersion": 1,
+                "position": [
+                    1000,
+                    550
+                ],
+                "parameters": {
+                    "name": "calculator",
+                    "description": "Kalkula\u010dka pro v\u00fdpo\u010dty procentu\u00e1ln\u00edch zm\u011bn, cenov\u00fdch rozd\u00edl\u016f a porovn\u00e1n\u00ed. Vstup je JavaScript matematick\u00fd v\u00fdraz jako string. P\u0159\u00edklad: '(85000 - 80000) / 80000 * 100' vr\u00e1t\u00ed procentu\u00e1ln\u00ed zm\u011bnu.",
+                    "code": "const expression = query;\ntry {\n  const result = new Function('return ' + expression)();\n  return JSON.stringify({ result: Number(result.toFixed(4)), expression });\n} catch (e) {\n  return JSON.stringify({ error: 'Neplatn\u00fd v\u00fdraz: ' + e.message });\n}"
+                }
+            }
+        ],
+        "connections": {
+            "Chat": {
+                "main": [
+                    [
+                        {
+                            "node": "CoinGecko BTC",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "CoinGecko BTC": {
+                "main": [
+                    [
+                        {
+                            "node": "Prepare Context",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Prepare Context": {
+                "main": [
+                    [
+                        {
+                            "node": "Market Agent",
+                            "type": "main",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "GPT-4o": {
+                "ai_languageModel": [
+                    [
+                        {
+                            "node": "Market Agent",
+                            "type": "ai_languageModel",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Chat Memory": {
+                "ai_memory": [
+                    [
+                        {
+                            "node": "Market Agent",
+                            "type": "ai_memory",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Historical Analyses": {
+                "ai_tool": [
+                    [
+                        {
+                            "node": "Market Agent",
+                            "type": "ai_tool",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Embeddings OpenAI": {
+                "ai_embedding": [
+                    [
+                        {
+                            "node": "Historical Analyses",
+                            "type": "ai_embedding",
+                            "index": 0
+                        }
+                    ]
+                ]
+            },
+            "Calculator": {
+                "ai_tool": [
+                    [
+                        {
+                            "node": "Market Agent",
+                            "type": "ai_tool",
+                            "index": 0
+                        }
+                    ]
+                ]
+            }
+        },
+        "authors": "Marek stancl.marek@gmail.com",
+        "name": null,
+        "description": null,
+        "autosaved": false,
+        "workflowPublishHistory": [
+            {
+                "createdAt": "2026-03-01T16:27:56.663Z",
+                "id": 32,
+                "workflowId": "JxXfdhiJkohkqkYH",
+                "versionId": "91ef81bc-7a8e-43d0-89a6-51b52fb9edeb",
+                "event": "activated",
+                "userId": "58a99e76-cb4e-4039-871c-8a6da3e7a80f"
+            }
+        ]
+    }
+}
